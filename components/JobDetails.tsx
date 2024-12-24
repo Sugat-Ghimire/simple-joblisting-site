@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Heart } from "lucide-react";
+
 import ApplicationForm from "./ApplicationForm";
 
 interface Job {
@@ -13,7 +13,6 @@ interface Job {
   description: string;
   salary: string;
   posted_date: string;
-  isFavorite: boolean;
 }
 
 export default function JobDetails({ id }: { id: string }) {
@@ -69,31 +68,6 @@ export default function JobDetails({ id }: { id: string }) {
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <h1 className="text-3xl font-bold text-gray-800">{job.title}</h1>
-          <button
-            onClick={async () => {
-              try {
-                const response = await fetch(`/api/jobs/${id}/favorite`, {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ isFavorite: !job.isFavorite }),
-                });
-                if (!response.ok)
-                  throw new Error("Failed to update favorite status");
-                setJob({ ...job, isFavorite: !job.isFavorite });
-              } catch (err) {
-                console.error("Error updating favorite status:", err);
-              }
-            }}
-            className={`p-2 rounded-full ${
-              job.isFavorite
-                ? "bg-red-100 text-red-500"
-                : "bg-gray-100 text-gray-500"
-            } hover:bg-opacity-80 transition-colors duration-300`}
-          >
-            <Heart
-              className={`w-6 h-6 ${job.isFavorite ? "fill-current" : ""}`}
-            />
-          </button>
         </div>
         <div className="mb-6">
           <p className="text-xl text-gray-600 mb-2">{job.company}</p>

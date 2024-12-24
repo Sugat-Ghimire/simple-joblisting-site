@@ -14,7 +14,6 @@ interface Job {
   salary: string;
   posted_date: string;
   description: string;
-  isFavorite: boolean;
 }
 
 const ITEMS_PER_PAGE = 5;

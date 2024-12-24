@@ -2,14 +2,14 @@ interface PaginationProps {
   itemsPerPage: number;
   totalItems: number;
   currentPage: number;
-  onPageChange: (page: number) => void; // Changed from setCurrentPage
+  onPageChange: (page: number) => void;
 }
 
 export default function Pagination({
   itemsPerPage,
   totalItems,
   currentPage,
-  onPageChange, // Changed prop name
+  onPageChange,
 }: PaginationProps) {
   const pageNumbers = [];
 
@@ -23,7 +23,7 @@ export default function Pagination({
         {pageNumbers.map((number) => (
           <li key={number}>
             <button
-              onClick={() => onPageChange(number)} // Updated function call
+              onClick={() => onPageChange(number)}
               className={`px-4 py-2 rounded-md transition-colors duration-300 ${
                 currentPage === number
                   ? "bg-blue-500 text-white"
