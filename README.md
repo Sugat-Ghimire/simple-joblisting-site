@@ -12,7 +12,7 @@ This is a full-stack job listing application built with Next.js. It allows users
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/joblistingsite.git
+   git clone https://github.com/Sugat-Ghimire/simple-joblisting-site
    cd joblistingsite
    ```
 
