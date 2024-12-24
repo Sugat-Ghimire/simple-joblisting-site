@@ -1,20 +1,68 @@
 "use client";
 
-import { useState } from "react";
-import { useJobStore } from "@/store/useJobStore";
-import ApplicationForm from "./ApplicationForm";
+import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Heart } from "lucide-react";
+import ApplicationForm from "./ApplicationForm";
+
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  description: string;
+  salary: string;
+  postedDate: string;
+  isFavorite: boolean;
+}
 
 export default function JobDetails({ id }: { id: string }) {
-  const { jobs, toggleFavorite } = useJobStore();
+  const [job, setJob] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
 
-  const job = jobs.find((j) => j.id === id);
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const response = await fetch(`/api/jobs/${id}`);
+        if (!response.ok) throw new Error("Failed to fetch job");
+        const data = await response.json();
+        setJob(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch job");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!job) {
-    return <div className="text-center text-gray-600">Job not found</div>;
+    fetchJob();
+  }, [id]);
+  // date formatting utility
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "Date unavailable";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return "Date unavailable";
+      }
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch {
+      return "Date unavailable";
+    }
+  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[200px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
+
+  if (error)
+    return <div className="text-center text-red-600 p-4">Error: {error}</div>;
+  if (!job)
+    return <div className="text-center text-gray-600">Job not found</div>;
 
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -22,15 +70,25 @@ export default function JobDetails({ id }: { id: string }) {
         <div className="flex justify-between items-start mb-4">
           <h1 className="text-3xl font-bold text-gray-800">{job.title}</h1>
           <button
-            onClick={() => toggleFavorite(job.id)}
+            onClick={async () => {
+              try {
+                const response = await fetch(`/api/jobs/${id}/favorite`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ isFavorite: !job.isFavorite }),
+                });
+                if (!response.ok)
+                  throw new Error("Failed to update favorite status");
+                setJob({ ...job, isFavorite: !job.isFavorite });
+              } catch (err) {
+                console.error("Error updating favorite status:", err);
+              }
+            }}
             className={`p-2 rounded-full ${
               job.isFavorite
                 ? "bg-red-100 text-red-500"
                 : "bg-gray-100 text-gray-500"
             } hover:bg-opacity-80 transition-colors duration-300`}
-            aria-label={
-              job.isFavorite ? "Remove from favorites" : "Add to favorites"
-            }
           >
             <Heart
               className={`w-6 h-6 ${job.isFavorite ? "fill-current" : ""}`}
@@ -44,8 +102,7 @@ export default function JobDetails({ id }: { id: string }) {
             {job.salary}
           </p>
           <p className="text-sm text-gray-400">
-            Posted{" "}
-            {formatDistanceToNow(new Date(job.postedDate), { addSuffix: true })}
+            Posted {formatDate(job.postedDate)}
           </p>
         </div>
         <div className="prose max-w-none mb-6">
