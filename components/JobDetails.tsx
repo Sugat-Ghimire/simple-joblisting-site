@@ -12,7 +12,7 @@ interface Job {
   location: string;
   description: string;
   salary: string;
-  postedDate: string;
+  posted_date: string;
   isFavorite: boolean;
 }
 
@@ -102,7 +102,7 @@ export default function JobDetails({ id }: { id: string }) {
             {job.salary}
           </p>
           <p className="text-sm text-gray-400">
-            Posted {formatDate(job.postedDate)}
+            Posted {formatDate(job.posted_date)}
           </p>
         </div>
         <div className="prose max-w-none mb-6">

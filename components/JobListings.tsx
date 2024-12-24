@@ -12,7 +12,7 @@ interface Job {
   company: string;
   location: string;
   salary: string;
-  postedDate: string;
+  posted_date: string;
   description: string;
   isFavorite: boolean;
 }
@@ -127,8 +127,8 @@ export default function JobListings() {
                       </p>
                       <p className="text-sm text-gray-400 mt-2">
                         Posted{" "}
-                        {job.postedDate
-                          ? formatDistanceToNow(new Date(job.postedDate), {
+                        {job.posted_date
+                          ? formatDistanceToNow(new Date(job.posted_date), {
                               addSuffix: true,
                             })
                           : "Date unavailable"}
